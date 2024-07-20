@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% load static %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+<div class="container my-4 text-center">
+<div id="dbutton"></div>
+</div>
+<script>
+    let signals = document.getElementById('dbutton') 
+    let etext = `<a target="_blank" class="btn btn-warning" href="{% static "download/"%}{{ id }}">Download</a>`;
+    signals.innerHTML = etext
+</script>
+{% endblock content %}

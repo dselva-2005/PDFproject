@@ -1,0 +1,59 @@
+{% extends "base.html" %} {% load static %} {% load crispy_forms_tags %}
+
+{%block content %}
+<div class="container my-4 text-center color">
+    <form method="post" enctype="multipart/form-data" id="MergeForm" action="{% url "merge" %}">
+        {% csrf_token %} {% crispy form %}
+    </form>
+    <div id="signals"></div>
+</div>
+
+<script>
+    let signals = document.getElementById('signals')
+    let form = document.getElementById("MergeForm");
+    let mergePDFs = document.getElementById("MergeForm_file");
+    form.addEventListener("submit", function (e) {
+        e.preventDefault();
+        uploadFiles();
+    });
+
+
+    function loadElement(context) {
+        window.location.href = ('{% url "home" %}'+`${context.fname}`)
+    }
+
+
+    function loadspinner(string){
+        etext = `<div class="d-flex justify-content-center">
+        <div class="spinner-border" role="status">
+        <span class="visually-hidden">Loading...</span>
+        </div>
+        </div>`;
+        form.style.display = "none";
+        signals.innerHTML = etext
+    }
+
+    async function uploadFiles() {
+        loadspinner()
+        let url = "{{ url }}";
+        let data = new FormData();
+        for (let i = 0; i < mergePDFs.files.length; i++) {
+            data.append("file", mergePDFs.files[i]);
+        }
+        let csrftoken = document.querySelector(
+            "input[name=csrfmiddlewaretoken]"
+        ).value;
+        let respons = await fetch(url, {
+            method: "POST",
+            body: data,
+            headers: {
+                Accept: "application/json, text/plain, */*",
+                "X-CSRFToken": csrftoken,
+            },
+        });
+        respons = await respons.json();
+        loadElement(respons);
+    }
+
+</script>
+{% endblock content %}
